@@ -1,0 +1,17 @@
+"guilds": "` + client.guilds.cache.size + `", "members": "` +
+client.guilds.cache.reduce((a, g) => a + g.memberCount, 0) + `", "prefix": "` +
+process.env.PREFIX + `", "channels": "` + client.channels.cache.size + `",
+"uptime": "` + client.uptime + `"\n}`
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lanya | Status</title>
+  </head>
+  <body>
+    <%= client.uptime %>
+  </body>
+</html>
