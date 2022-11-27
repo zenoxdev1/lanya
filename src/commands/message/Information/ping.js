@@ -1,5 +1,5 @@
 const { Message } = require("discord.js");
-const BOT = require("../../../handlers/Client");
+const Lanya = require("../../../../handlers/Lanya");
 
 module.exports = {
   name: "ping",
@@ -10,7 +10,7 @@ module.exports = {
   cooldown: 10,
   /**
    *
-   * @param {BOT} client
+   * @param {Lanya} client
    * @param {Message} message
    * @param {String[]} args
    * @param {String} prefix

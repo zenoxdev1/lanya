@@ -1,5 +1,5 @@
 const { CommandInteraction, ApplicationCommandType } = require("discord.js");
-const BOT = require("../../../handlers/Client");
+const Lanya = require("../../../../handlers/Lanya");
 
 module.exports = {
   // options
@@ -13,7 +13,7 @@ module.exports = {
   // command start
   /**
    *
-   * @param {BOT} client
+   * @param {Lanya} client
    * @param {CommandInteraction} interaction
    */
   run: async (client, interaction) => {

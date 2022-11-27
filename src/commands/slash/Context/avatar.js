@@ -2,7 +2,7 @@ const {
   ContextMenuCommandInteraction,
   ApplicationCommandType,
 } = require("discord.js");
-const BOT = require("../../../handlers/Client");
+const Lanya = require("../../../../handlers/Lanya");
 
 module.exports = {
   name: "avatar",
@@ -10,7 +10,7 @@ module.exports = {
   type: ApplicationCommandType.User,
   /**
    *
-   * @param {BOT} client
+   * @param {Lanya} client
    * @param {ContextMenuCommandInteraction} interaction
    */
   run: async (client, interaction) => {

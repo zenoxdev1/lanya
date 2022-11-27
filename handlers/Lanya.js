@@ -7,7 +7,7 @@ const {
 } = require("discord.js");
 const fs = require("fs");
 
-class BOT extends Client {
+class Lanya extends Client {
   constructor() {
     super({
       messageCacheLifetime: 60,
@@ -54,8 +54,8 @@ class BOT extends Client {
     this.mcommands = new Collection();
     this.commands = new Collection();
     this.aliases = new Collection();
-    this.mcategories = fs.readdirSync("./Commands/Message");
-    this.scategories = fs.readdirSync("./Commands/Slash");
+    this.mcategories = fs.readdirSync("./src/commands/message");
+    this.scategories = fs.readdirSync("./src/commands/slash");
     this.config = require("../settings");
     this.getFooter = (user) => {
       return {
@@ -105,4 +105,4 @@ class BOT extends Client {
   }
 }
 
-module.exports = BOT;
+module.exports = Lanya;

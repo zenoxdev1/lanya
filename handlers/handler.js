@@ -1,6 +1,6 @@
 const { EmbedBuilder } = require("discord.js");
 const fs = require("fs");
-const BOT = require("./Client");
+const BOT = require("./Lanya");
 
 /**
  *
@@ -11,12 +11,12 @@ module.exports = async (client) => {
   // LOADING SLASH COMMANDS
   try {
     let arrayOfcommands = [];
-    fs.readdirSync("./Commands/Slash").forEach((cmd) => {
+    fs.readdirSync("./src/commands/slash").forEach((cmd) => {
       let commands = fs
-        .readdirSync(`./Commands/Slash/${cmd}/`)
+        .readdirSync(`./src/commands/slash/${cmd}/`)
         .filter((file) => file.endsWith(".js"));
       for (cmds of commands) {
-        let pull = require(`../Commands/Slash/${cmd}/${cmds}`);
+        let pull = require(`../src/commands/slash/${cmd}/${cmds}`);
         if (pull.name) {
           client.commands.set(pull.name, pull);
           arrayOfcommands.push(pull);
@@ -40,12 +40,12 @@ module.exports = async (client) => {
 
   // LOADING MESSAGE COMMANDS
   try {
-    fs.readdirSync("./Commands/Message").forEach((cmd) => {
+    fs.readdirSync("./src/commands/message").forEach((cmd) => {
       let commands = fs
-        .readdirSync(`./Commands/Message/${cmd}/`)
+        .readdirSync(`./src/commands/message/${cmd}/`)
         .filter((file) => file.endsWith(".js"));
       for (cmds of commands) {
-        let pull = require(`../Commands/Message/${cmd}/${cmds}`);
+        let pull = require(`../src/commands/message/${cmd}/${cmds}`);
         if (pull.name) {
           client.mcommands.set(pull.name, pull);
         } else {
