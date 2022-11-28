@@ -15,6 +15,8 @@ app.set('view engine', 'ejs')
 app.use("/static", express.static(path.join(__dirname, "public")));
 app.use("/", require("./src/router/index"));
 app.use("/status", require("./src/router/status"));
+app.use("/auth", require("./src/router/auth"));
+app.use("/dashboard", require("./src/router/dashboard"));
 // Simple api endpoint
 
 if (!module.parent) {
