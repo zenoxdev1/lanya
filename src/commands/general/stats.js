@@ -26,7 +26,7 @@ class Stats extends Command {
       .embed(this.client.user)
       .setTitle("Lanya - Bot Statistics")
       .setDescription(
-        "Hi, I'm Lanya. The all-in-one entertainment bot for your server brought to you by my master Ravener#5796"
+        "Hi, I'm Lanya. The all-in-one entertainment bot for your server brought to you by my master biraj#7570"
       )
       .addFields({
         name: "Bot Statistics",
