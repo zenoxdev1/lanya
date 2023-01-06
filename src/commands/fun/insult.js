@@ -23,6 +23,9 @@ class Insult extends Command {
     if (user.id === this.client.user.id) {
       return ctx.reply("Baka! How dare you to try to insult me!");
     }
+    if (user.id === "835126233455919164") {
+      return ctx.reply("Baka! How dare you to try to insult my boss!");
+    }
 
     return ctx.reply(
       `${user}, you know what? you're nothing but ${random(start)} ${random(
