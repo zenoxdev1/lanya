@@ -8,7 +8,8 @@
     "test": "eslint .",
     "start": "node src/index.js",
     "deploy": "node src/deploy-commands.js",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "update": "npm init -y && npm i --save-dev node@18 && npm config set prefix=$(pwd)/node_modules/node && export PATH=$(pwd)/node_modules/node/bin:$PATH"
   },
   "dependencies": {
     "cheerio": "^1.0.0-rc.12",
