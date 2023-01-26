@@ -1,23 +1,19 @@
-const Command = require("../../structures/Command.js");
-const { request } = require("undici");
+const Discord = require('discord.js');
+const fetch = require("node-fetch");
 
-class CatFact extends Command {
-  constructor(...args) {
-    super(...args, {
-      aliases: ["catfacts", "kittenfact"],
-      cooldown: 3,
-      description: "Let me tell you a misterious cat fact.",
-      cost: 10,
-    });
-  }
+module.exports = async (client, interaction, args) => {
 
-  async run(ctx) {
-    const { fact } = await request("https://catfact.ninja/fact").then(
-      ({ body }) => body.json()
-    );
-
-    return ctx.reply(`📢 **Catfact:** *${fact}*`);
-  }
+    fetch(
+        `https://some-random-api.ml/facts/cat`
+    )
+        .then((res) => res.json()).catch({})
+        .then(async (json) => {
+            client.embed({
+                title: `💡・Random cat fact`,
+                desc: json.fact,
+                type: 'editreply',
+            }, interaction);
+        }).catch({})
 }
 
-module.exports = CatFact;
+ 

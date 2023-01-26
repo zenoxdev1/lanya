@@ -1,22 +1,20 @@
-const Command = require("../../structures/Command.js");
-const { request } = require("undici");
+const Discord = require('discord.js');
+const request = require('request');
 
-class Fact extends Command {
-  constructor(...args) {
-    super(...args, {
-      description: "Get a random fact.",
-      aliases: ["facts", "randomfact", "randomfacts"],
-      cooldown: 3,
-    });
-  }
+module.exports = async (client, interaction, args) => {
 
-  async run(ctx) {
-    const { fact } = await request("https://nekos.life/api/v2/fact").then(
-      ({ body }) => body.json()
-    );
+    var url = 'https://uselessfacts.jsph.pl/random.json?language=en'
 
-    return ctx.reply(fact);
-  }
+
+    request(url, function (err, response, body) {
+        fact = JSON.parse(body).text;
+
+        client.embed({
+            title: `😂・Fact`,
+            desc: fact,
+            type: 'editreply',
+        }, interaction);
+    })
 }
 
-module.exports = Fact;
+ 
