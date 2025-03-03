@@ -1,0 +1,19 @@
+{
+    "token": "",
+    "clientId": "",
+    "weatherApi": "",
+    "MongoDBURI": "",
+    "logsChannelId": "",
+      "statuses": [
+       {
+          "type": "Playing",
+          "state": "with commands"
+       }
+  ],
+  "lavalink": {
+    "host": "",
+    "port": null,
+    "name": "",
+    "password": ""
+  }
+}
