@@ -260,5 +260,5 @@ Have suggestions? Feel free to share them in our [Support Server](https://discor
 ---
 
 <div align="center">
-  Made with ❤️ by the Lanya Development Team
+  Made with ❤️ by the Lanya Development Team & Fork of [Zeltux](https://github.com/RedolentHalo/Zeltux)
 </div>
