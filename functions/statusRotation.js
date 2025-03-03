@@ -21,7 +21,7 @@ function updateStatus(client) {
           type: ActivityType[status.type],
         },
       ],
-      status: 'idle',
+      status: 'online',
     });
 
     currentIndex = (currentIndex + 1) % config.statuses.length;
