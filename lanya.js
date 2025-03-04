@@ -6,7 +6,7 @@ app.get('/', (req, res) => {
 });
 
 app.listen(3000, () => {
-  console.log('✅ Express server running on http://localhost:3000');
+  console.log('✅ Express server running on http://localhost:10000');
 });
 require('dotenv').config();
 const { Client, GatewayIntentBits } = require('discord.js');
