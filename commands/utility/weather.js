@@ -1,6 +1,6 @@
 const { EmbedBuilder, SlashCommandBuilder } = require('discord.js');
 const fetch = require('node-fetch');
-const { weatherApi } = require('./../../config.json');
+require('dotenv').config();
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -15,7 +15,11 @@ module.exports = {
   async execute(interaction) {
     const location = interaction.options.getString('location');
 
-    const apiKey = weatherApi;
+    const apiKey = process.env.WEATHER_API;
+
+    if (!apiKey) {
+      return await interaction.reply('Weather API key is not configured.');
+    }
 
     const weatherResponse = await fetch(
       `http://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${encodeURIComponent(location)}`

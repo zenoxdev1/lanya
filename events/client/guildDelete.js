@@ -1,12 +1,12 @@
 const { Events, EmbedBuilder } = require('discord.js');
-const { logsChannelId } = require('../../config.json');
+require('dotenv').config();
 
 module.exports = {
   name: Events.GuildDelete,
   async execute(guild) {
     let logChannel;
     try {
-      logChannel = guild.client.channels.cache.get(logsChannelId);
+      logChannel = guild.client.channels.cache.get(process.env.LOGS_CHANNEL_ID);
     } catch (error) {
       console.error('Could not fetch the log channel:', error);
       return;

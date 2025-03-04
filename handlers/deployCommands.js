@@ -1,7 +1,10 @@
+require('dotenv').config();
 const { REST, Routes } = require('discord.js');
 const fs = require('fs');
 const path = require('path');
-const { clientId, token } = require('../config.json');
+
+const clientId = process.env.DISCORD_CLIENT_ID;
+const token = process.env.DISCORD_TOKEN;
 
 module.exports = async () => {
   const commands = [];
@@ -36,6 +39,6 @@ module.exports = async () => {
       )
     );
   } catch (error) {
-    console.error(global.style.errorColor(error));
+    console.error(global.styles.errorColor(error));
   }
 };

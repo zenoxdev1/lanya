@@ -1,6 +1,6 @@
+require('dotenv').config();
 const { Client, GatewayIntentBits } = require('discord.js');
 const { LavalinkManager } = require('lavalink-client');
-const { token, clientId, lavalink } = require('./config.json');
 const fs = require('fs');
 const path = require('path');
 const chalk = require('chalk');
@@ -20,17 +20,17 @@ const client = new Client({
 client.lavalink = new LavalinkManager({
   nodes: [
     {
-      authorization: lavalink.password,
-      host: lavalink.host,
-      port: lavalink.port,
-      id: lavalink.name,
+      authorization: process.env.LL_PASSWORD,
+      host: process.env.LL_HOST,
+      port: parseInt(process.env.LL_PORT, 10),
+      id: process.env.LL_NAME,
     },
   ],
   sendToShard: (guildId, payload) =>
     client.guilds.cache.get(guildId)?.shard?.send(payload),
   autoSkip: true,
   client: {
-    id: clientId,
+    id: process.env.DISCORD_CLIENT_ID,
     username: 'Lanya',
   },
   playerOptions: {
@@ -60,7 +60,7 @@ global.styles = styles;
 const handlerFiles = fs
   .readdirSync(path.join(__dirname, 'handlers'))
   .filter((file) => file.endsWith('.js'));
-counter = 0;
+let counter = 0;
 for (const file of handlerFiles) {
   counter += 1;
   const handler = require(`./handlers/${file}`);
@@ -69,6 +69,6 @@ for (const file of handlerFiles) {
   }
 }
 console.log(
-  global.styles.successColor(`✅ Succesfully loaded ${counter} handlers`)
+  global.styles.successColor(`✅ Successfully loaded ${counter} handlers`)
 );
-client.login(token);
+client.login(process.env.DISCORD_TOKEN);

@@ -1,11 +1,18 @@
 const { ActivityType } = require('discord.js');
-const config = require('../config.json');
+require('dotenv').config();
 
 function updateStatus(client) {
   let currentIndex = 0;
 
+  const statuses = [
+    {
+      type: process.env.STATUS_TYPE || 'Playing',
+      state: process.env.STATUS_STATE || 'with commands',
+    },
+  ];
+
   setInterval(() => {
-    const status = config.statuses[currentIndex];
+    const status = statuses[currentIndex];
 
     let state = status.state
       .replace('{serverCount}', client.guilds.cache.size)
@@ -18,13 +25,13 @@ function updateStatus(client) {
       activities: [
         {
           name: state,
-          type: ActivityType[status.type],
+          type: ActivityType[status.type.toUpperCase()] || ActivityType.Playing,
         },
       ],
       status: 'online',
     });
 
-    currentIndex = (currentIndex + 1) % config.statuses.length;
+    currentIndex = (currentIndex + 1) % statuses.length;
   }, 30000);
 }
 
