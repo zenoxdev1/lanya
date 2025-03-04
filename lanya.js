@@ -5,7 +5,7 @@ app.get('/', (req, res) => {
   res.send('Everything is up!');
 });
 
-app.listen(3000, () => {
+app.listen(10000, () => {
   console.log('✅ Express server running on http://localhost:10000');
 });
 require('dotenv').config();
