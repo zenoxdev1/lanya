@@ -13,7 +13,8 @@ module.exports = {
       guildId: message.guild.id,
     });
 
-    if (!guildData.levelingEnabled) return;
+    // Check if guildData exists before accessing properties
+    if (!guildData || !guildData.levelingEnabled) return;
 
     const messageCooldown = 3000;
     const xpRate = guildData.xpRate || 1;
@@ -51,9 +52,12 @@ module.exports = {
 
     const calculateXpNeeded = (level) => {
       if (level === 1) {
-        return guildData.startingXp;
+        return guildData.startingXp || 100; // Default value if startingXp is undefined
       } else {
-        return guildData.startingXp + (level - 1) * guildData.xpPerLevel;
+        return (
+          (guildData.startingXp || 100) +
+          (level - 1) * (guildData.xpPerLevel || 50)
+        ); // Default values
       }
     };
 
