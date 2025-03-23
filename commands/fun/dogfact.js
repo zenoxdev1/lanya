@@ -10,7 +10,8 @@ module.exports = {
     try {
       const response = await fetch('https://dog-api.kinduff.com/api/facts');
       const factData = await response.json();
-
+// json
+// {"facts":[],"success":false}
       const embed = new EmbedBuilder()
         .setColor(0x5865f2)
         .setTitle('Did You Know?')
