@@ -7,7 +7,7 @@ function updateStatus(client) {
   const statuses = [
     {
       type: process.env.STATUS_TYPE || 'Playing',
-      state: process.env.STATUS_STATE || 'with commands',
+      state: process.env.STATUS_STATE || 'with you.',
     },
   ];
 
