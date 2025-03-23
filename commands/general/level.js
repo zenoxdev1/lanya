@@ -16,11 +16,23 @@ module.exports = {
       guildId: interaction.guild.id,
     });
 
+    // Check if guildData exists, if not create default settings or return an error
+    if (!guildData) {
+      return interaction.reply({
+        content:
+          'Leveling system is not configured for this server yet. Please ask an admin to set it up.',
+        flags: 1 << 6,
+      });
+    }
+
+    // Now we can safely check if leveling is enabled
     if (!guildData.levelingEnabled) {
       return interaction.reply({
         content: 'Leveling system is not enabled in this Server',
+        flags: 1 << 6,
       });
     }
+
     const targetUser = interaction.options.getUser('user') || interaction.user;
     const memberData = await MemberData.findOne({
       guildId: interaction.guild.id,
@@ -32,14 +44,14 @@ module.exports = {
     if (!memberData) {
       return interaction.reply({
         content: `${targetUser.username} has no level data.`,
-        ephemeral: true,
+        flags: 1 << 6,
       });
     }
 
     const xpNeeded = this.calculateXpNeeded(memberData.level, guildData);
     const progress = memberData.xp / xpNeeded;
 
-    registerFont('./utils/Poppins-Regular.ttf', { family: 'Poppins' });
+    // registerFont('./utils/Poppins-Regular.ttf', { family: 'Poppins' });
 
     const canvasWidth = 934;
     const canvasHeight = 282;
@@ -99,14 +111,16 @@ module.exports = {
       console.error(`Failed to load or convert avatar image: ${error.message}`);
       return interaction.reply({
         content: `Could not load avatar image for ${targetUser.username}.`,
-        ephemeral: true,
+        flags: 1 << 6,
       });
     }
 
     ctx.fillStyle = '#EAEAEA';
-    ctx.font = 'bold 52px "Poppins"';
+    // ctx.font = 'bold 52px "Poppins"';
+    ctx.font = 'bold 52px Arial, sans-serif'; // Use system fonts
     ctx.fillText(`${targetUser.username}`, 245, 110);
-    ctx.font = 'bold 30px "Poppins"';
+    // ctx.font = 'bold 30px "Poppins"';
+    ctx.font = 'bold 30px Arial, sans-serif'; // Use system fonts
     ctx.fillText(`XP: ${memberData.xp} / ${xpNeeded}`, 245, 151);
 
     const leaderboardRank = await this.getLeaderboardRank(
@@ -115,7 +129,8 @@ module.exports = {
       memberData.xp
     );
     ctx.fillStyle = '#5E81AC';
-    ctx.font = 'bold 40px "Poppins"';
+    // ctx.font = 'bold 40px "Poppins"';
+    ctx.font = 'bold 40px Arial, sans-serif'; // System fonts
 
     const rankText = `Rank #${leaderboardRank}`;
     const levelText = `Level ${memberData.level}`;
@@ -161,7 +176,8 @@ module.exports = {
     }
 
     ctx.fillStyle = '#EAEAEA';
-    ctx.font = 'bold 36px "Poppins"';
+    // ctx.font = 'bold 36px "Poppins"';
+    ctx.font = 'bold 36px Arial, sans-serif'; // Use system fonts
     ctx.fillText(
       `${Math.floor(progress * 100)}%`,
       progressBarX + progressBarWidth / 2 - 30,
