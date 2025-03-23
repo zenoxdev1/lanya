@@ -134,39 +134,49 @@ module.exports = {
     });
 
     collector.on('collect', async (i) => {
-      const selectedCategory = i.values[0];
-      const commandsInCategory = categories[selectedCategory];
+      try {
+        const selectedCategory = i.values[0];
+        const commandsInCategory = categories[selectedCategory];
 
-      const categoryEmbed = new EmbedBuilder()
-        .setColor(0x5865f2)
-        .setTitle(`📂 **${selectedCategory} Commands**`)
-        .setDescription(
-          commandsInCategory
-            .map((cmdName) => {
-              const cmd = interaction.client.commands.get(cmdName);
-              return `> \`/${cmdName}\` - ${cmd?.data?.description || 'No description available.'}`;
-            })
-            .join('\n') || 'No commands available.'
-        )
-        .setFooter({
-          text: `Requested by ${interaction.user.tag}`,
-          iconURL: interaction.user.displayAvatarURL(),
-        })
-        .setTimestamp();
+        const categoryEmbed = new EmbedBuilder()
+          .setColor(0x5865f2)
+          .setTitle(`📂 **${selectedCategory} Commands**`)
+          .setDescription(
+            commandsInCategory
+              .map((cmdName) => {
+                const cmd = interaction.client.commands.get(cmdName);
+                return `> \`/${cmdName}\` - ${cmd?.data?.description || 'No description available.'}`;
+              })
+              .join('\n') || 'No commands available.'
+          )
+          .setFooter({
+            text: `Requested by ${interaction.user.tag}`,
+            iconURL: interaction.user.displayAvatarURL(),
+          })
+          .setTimestamp();
 
-      await i.update({ embeds: [categoryEmbed], components: [row] });
+        await i.update({ embeds: [categoryEmbed], components: [row] });
+      } catch (error) {
+        console.error('Error handling select menu interaction:', error);
+        // Don't try to respond if we can't update the interaction
+      }
     });
 
     collector.on('end', async () => {
-      const disabledMenu = new StringSelectMenuBuilder(
-        row.components[0]
-      ).setDisabled(true);
-      const disabledRow = new ActionRowBuilder().addComponents(disabledMenu);
-      await interaction.editReply({
-        components: [disabledRow],
-        content:
-          '⌛ Help menu has timed out. Run `/help` again if you need more information.',
-      });
+      try {
+        // Just remove components (menu) when timed out
+        await interaction
+          .editReply({
+            components: [],
+            content:
+              '⌛ Help menu has expired. Run `/help` again if you need more information.',
+          })
+          .catch((err) =>
+            console.error('Failed to remove timed out menu:', err)
+          );
+      } catch (error) {
+        console.error('Error handling collector end:', error);
+      }
     });
   },
 };
