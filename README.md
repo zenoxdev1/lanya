@@ -1,18 +1,17 @@
-# Lanya
-
 <div align="center">
-  <img src="https://i.imgur.com/YOUR_LOGO_IMAGE.png" alt="Lanya Logo" width="200">
+
+  <h1><img src="utils/logo.jpg" alt="Lanya Logo" width="35"> Lanya Discord Bot</h1>
   <br>
   <p><strong>An open-source Discord bot designed to enhance community interaction with a variety of engaging and useful features.</strong></p>
   
-  [![Discord](https://img.shields.io/discord/865198018872999966?color=5865F2&logo=discord&logoColor=white)](https://discord.gg/zvmJzpNRzz)
+  [![Discord](https://img.shields.io/discord/865198018872999966?color=5865F2&logo=discord&logoColor=white)](https://discord.gg/kAYpdenZ8b)
   [![License](https://img.shields.io/github/license/birajrai/Lanya)](LICENSE)
   [![Stars](https://img.shields.io/github/stars/birajrai/Lanya?style=social)](https://github.com/birajrai/Lanya/stargazers)
 </div>
 
-## ✨ Overview
+## ✨ About Lanya
 
-Lanya is a feature-rich Discord bot built to improve server engagement and provide useful tools for both administrators and members. With commands ranging from fun interactions to powerful moderation tools, Lanya is the perfect addition to any Discord community.
+Lanya is a Discord bot built to improve server engagement and provide useful tools for both administrators and members. With commands ranging from fun interactions to powerful moderation tools.
 
 ## 🚀 Features
 
@@ -133,7 +132,10 @@ Lanya is a feature-rich Discord bot built to improve server engagement and provi
 
 For any assistance, feature requests, or bug reports, join our official support server:
 
-<a href="https://discord.gg/zvmJzpNRzz"><img src="https://discord.com/api/guilds/865198018872999966/widget.png?style=banner2" alt="Support Server"></a>
+<a href="https://discord.gg/kAYpdenZ8b"><img src="https://discord.com/api/guilds/865198018872999966/widget.png?style=banner2" alt="Support Server"></a>
+<br>
+  <a href="https://discord.gg/kAYpdenZ8b" target="_blank">
+    <img src="https://img.shields.io/static/v1?message=Discord&logo=discord&label=&color=7289DA&logoColor=white&labelColor=&style=for-the-badge" height="35" alt="discord logo"  />
 
 ## 🔧 Quick Setup
 
@@ -255,10 +257,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [ ] Music playback capabilities
 - [ ] Role reaction system
 
-Have suggestions? Feel free to share them in our [Support Server](https://discord.gg/zvmJzpNRzz)!
+Have suggestions? Feel free to share them in our [Support Server](https://discord.gg/kAYpdenZ8b)!
 
 ---
 
 <div align="center">
-  Made with ❤️ by the Lanya Development Team & Fork of Zeltux.
+  Made with ❤️ by the Lanya Development Team
 </div>
