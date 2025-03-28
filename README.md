@@ -166,7 +166,7 @@ cd Lanya
 2. **Install Dependencies**
 
 ```bash
-yarn --frozen-lockfile install
+npm install
 ```
 
 3. **Enter Your Configuration Details**
@@ -181,7 +181,7 @@ The setup script will prompt you to enter:
 4. **Start the Bot**
 
 ```bash
-node lanya.js
+npm run start
 ```
 
 For production environments:
