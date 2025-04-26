@@ -10,6 +10,9 @@ const ms = require('ms');
 
 async function startGiveaway(interaction) {
   try {
+    // Defer the reply immediately to prevent timeout
+    await interaction.deferReply({ flags: [MessageFlags.Ephemeral] });
+
     const duration = interaction.options.getString('duration');
     const prize = interaction.options.getString('prize');
     const winners = interaction.options.getInteger('winners');
@@ -21,41 +24,41 @@ async function startGiveaway(interaction) {
 
     // Validate duration format
     if (!durationRegex.test(duration)) {
-      return interaction.reply({
+      return interaction.editReply({
         content: 'Invalid duration format! Use something like `1d2h30m40s`.',
-        flags: MessageFlags.Ephemeral,
+        flags: [MessageFlags.Ephemeral],
       });
     }
 
     // Validate minimum duration (30 seconds)
     if (ms(duration) < 30000) {
-      return interaction.reply({
+      return interaction.editReply({
         content: 'Giveaway duration must be at least 30 seconds!',
-        flags: MessageFlags.Ephemeral,
+        flags: [MessageFlags.Ephemeral],
       });
     }
 
     // Validate maximum duration (30 days)
     if (ms(duration) > 2592000000) {
-      return interaction.reply({
+      return interaction.editReply({
         content: 'Giveaway duration cannot be longer than 30 days!',
-        flags: MessageFlags.Ephemeral,
+        flags: [MessageFlags.Ephemeral],
       });
     }
 
     // Validate winners count
     if (winners < 1) {
-      return interaction.reply({
+      return interaction.editReply({
         content: 'Number of winners must be at least 1!',
-        flags: MessageFlags.Ephemeral,
+        flags: [MessageFlags.Ephemeral],
       });
     }
 
     // Validate maximum winners
     if (winners > 50) {
-      return interaction.reply({
+      return interaction.editReply({
         content: 'Number of winners cannot be more than 50!',
-        flags: MessageFlags.Ephemeral,
+        flags: [MessageFlags.Ephemeral],
       });
     }
 
@@ -66,10 +69,10 @@ async function startGiveaway(interaction) {
         .permissionsFor(interaction.guild.members.me)
         .has(['SendMessages', 'EmbedLinks', 'AddReactions'])
     ) {
-      return interaction.reply({
+      return interaction.editReply({
         content:
           'I need `SendMessages`, `EmbedLinks`, and `AddReactions` permissions in the target channel!',
-        flags: MessageFlags.Ephemeral,
+        flags: [MessageFlags.Ephemeral],
       });
     }
 
@@ -77,9 +80,9 @@ async function startGiveaway(interaction) {
     if (
       !targetChannel.permissionsFor(interaction.member).has(['ManageMessages'])
     ) {
-      return interaction.reply({
+      return interaction.editReply({
         content: 'You need `ManageMessages` permission to start a giveaway!',
-        flags: MessageFlags.Ephemeral,
+        flags: [MessageFlags.Ephemeral],
       });
     }
 
@@ -126,16 +129,17 @@ async function startGiveaway(interaction) {
 
     await giveaway.save();
 
-    await interaction.reply({
+    await interaction.editReply({
       content: `Giveaway started in ${targetChannel}!`,
-      flags: MessageFlags.Ephemeral,
+      flags: [MessageFlags.Ephemeral],
     });
   } catch (error) {
     console.error('Error starting giveaway:', error);
-    await interaction.reply({
+    // Use editReply in the catch block as well
+    await interaction.editReply({
       content:
         'An error occurred while starting the giveaway. Please try again later.',
-      flags: MessageFlags.Ephemeral,
+      flags: [MessageFlags.Ephemeral],
     });
   }
 }
