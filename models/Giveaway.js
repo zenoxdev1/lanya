@@ -10,6 +10,7 @@ const giveawaySchema = new mongoose.Schema({
   participants: [String],
   ongoing: Boolean,
   requiredRole: String,
+  hostId: String,
 });
 
 module.exports = mongoose.model('Giveaway', giveawaySchema);
