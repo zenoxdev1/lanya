@@ -10,10 +10,14 @@ function getOrdinalSuffix(number) {
 
   if (lastTwoDigits >= 11 && lastTwoDigits <= 13) return 'th';
   switch (lastDigit) {
-    case 1: return 'st';
-    case 2: return 'nd';
-    case 3: return 'rd';
-    default: return 'th';
+    case 1:
+      return 'st';
+    case 2:
+      return 'nd';
+    case 3:
+      return 'rd';
+    default:
+      return 'th';
   }
 }
 
@@ -24,17 +28,22 @@ module.exports = {
       const autoRole = await AutoRole.findOne({ serverId: member.guild.id });
       const welcomeData = await Welcome.findOne({ serverId: member.guild.id });
 
-      if (!welcomeData || !welcomeData.enabled || !welcomeData.channelId) return;
+      if (!welcomeData || !welcomeData.enabled || !welcomeData.channelId)
+        return;
 
       const canvas = createCanvas(1920, 1080);
       const ctx = canvas.getContext('2d');
 
       // Load background
-      const background = await loadImage(path.join(__dirname, '../utils/welcome-background.png'));
+      const background = await loadImage(
+        path.join(__dirname, '../utils/welcome-background.png')
+      );
       ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
 
       // Load avatar
-      const avatar = await loadImage(member.user.displayAvatarURL({ extension: 'png', size: 512 }));
+      const avatar = await loadImage(
+        member.user.displayAvatarURL({ extension: 'png', size: 512 })
+      );
       const centerX = 960;
       const centerY = 350;
       const radius = 250;
@@ -53,7 +62,13 @@ module.exports = {
       ctx.arc(centerX, centerY, radius, 0, Math.PI * 2, true);
       ctx.closePath();
       ctx.clip();
-      ctx.drawImage(avatar, centerX - radius, centerY - radius, radius * 2, radius * 2);
+      ctx.drawImage(
+        avatar,
+        centerX - radius,
+        centerY - radius,
+        radius * 2,
+        radius * 2
+      );
       ctx.restore();
 
       // Add avatar border
@@ -67,16 +82,26 @@ module.exports = {
       const memberCount = member.guild.memberCount;
       const ordinalSuffix = getOrdinalSuffix(memberCount);
 
-      let description = welcomeData.description || 'Welcome {member} to {server}';
+      let description =
+        welcomeData.description || 'Welcome {member} to {server}';
       description = description
         .replace(/{member}/g, member.user)
         .replace(/{server}/g, member.guild.name)
         .replace(/{serverid}/g, member.guild.id)
         .replace(/{userid}/g, member.user.id)
-        .replace(/{joindate}/g, `<t:${Math.floor((member.joinedAt || Date.now()) / 1000)}:F>`)
-        .replace(/{accountage}/g, `<t:${Math.floor(member.user.createdAt / 1000)}:R>`)
+        .replace(
+          /{joindate}/g,
+          `<t:${Math.floor((member.joinedAt || Date.now()) / 1000)}:F>`
+        )
+        .replace(
+          /{accountage}/g,
+          `<t:${Math.floor(member.user.createdAt / 1000)}:R>`
+        )
         .replace(/{membercount}/g, memberCount)
-        .replace(/{serverage}/g, `<t:${Math.floor(member.guild.createdAt / 1000)}:R>`);
+        .replace(
+          /{serverage}/g,
+          `<t:${Math.floor(member.guild.createdAt / 1000)}:R>`
+        );
 
       // Add welcome text
       ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
@@ -92,11 +117,19 @@ module.exports = {
 
       ctx.font = '80px Arial';
       ctx.fillStyle = '#FFD700';
-      ctx.fillText(`You are our ${memberCount}${ordinalSuffix} Member!`, canvas.width / 2, 950);
+      ctx.fillText(
+        `You are our ${memberCount}${ordinalSuffix} Member!`,
+        canvas.width / 2,
+        950
+      );
 
       // Send welcome image
-      const attachment = new AttachmentBuilder(canvas.toBuffer('image/png'), { name: 'welcome.png' });
-      const welcomeChannel = member.guild.channels.cache.get(welcomeData.channelId);
+      const attachment = new AttachmentBuilder(canvas.toBuffer('image/png'), {
+        name: 'welcome.png',
+      });
+      const welcomeChannel = member.guild.channels.cache.get(
+        welcomeData.channelId
+      );
       if (welcomeChannel) {
         const welcomeEmbed = new EmbedBuilder()
           .setColor('#00BFFF')

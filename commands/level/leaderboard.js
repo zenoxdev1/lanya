@@ -11,10 +11,14 @@ module.exports = {
   async execute(interaction) {
     await interaction.deferReply();
 
-    const guildData = await GuildSettings.findOne({ guildId: interaction.guild.id });
+    const guildData = await GuildSettings.findOne({
+      guildId: interaction.guild.id,
+    });
 
     if (!guildData || !guildData.levelingEnabled) {
-      return interaction.editReply({ content: '❌ Leveling system is not enabled in this server.' });
+      return interaction.editReply({
+        content: '❌ Leveling system is not enabled in this server.',
+      });
     }
 
     const leaderboard = await MemberData.find({ guildId: interaction.guild.id })
@@ -22,7 +26,9 @@ module.exports = {
       .lean();
 
     if (leaderboard.length === 0) {
-      return interaction.editReply({ content: 'No members found in the leaderboard.' });
+      return interaction.editReply({
+        content: 'No members found in the leaderboard.',
+      });
     }
 
     const topMembers = leaderboard.slice(0, 10);
@@ -41,7 +47,9 @@ module.exports = {
     ctx.strokeRect(10, 10, canvas.width - 20, canvas.height - 20);
 
     // **Trophy Image**
-    const trophy = await loadImage('https://img.freepik.com/free-vector/golden-winners-cup_1284-18399.jpg'); // Replace with a valid trophy emoji image URL
+    const trophy = await loadImage(
+      'https://img.freepik.com/free-vector/golden-winners-cup_1284-18399.jpg'
+    ); // Replace with a valid trophy emoji image URL
     ctx.drawImage(trophy, 30, 30, 60, 60); // Position and size
 
     // Header
@@ -100,7 +108,9 @@ module.exports = {
     const buffer = await canvas.encode('png');
 
     // Send image
-    const attachment = new AttachmentBuilder(buffer, { name: 'leaderboard.png' });
+    const attachment = new AttachmentBuilder(buffer, {
+      name: 'leaderboard.png',
+    });
 
     await interaction.editReply({
       content: 'Here is the current leaderboard:',

@@ -100,9 +100,7 @@ module.exports = {
       .setURL('https://github.com/birajrai/Lanya.git')
       .setStyle(ButtonStyle.Link);
 
-    const row = new ActionRowBuilder().addComponents(
-      sourceCodeButton
-    );
+    const row = new ActionRowBuilder().addComponents(sourceCodeButton);
 
     await interaction.reply({ embeds: [botInfoEmbed], components: [row] });
   },

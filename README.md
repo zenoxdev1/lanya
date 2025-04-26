@@ -29,16 +29,16 @@ Lanya is a Discord bot built to improve server engagement and provide useful too
 <summary>ℹ️ <strong>Info Commands</strong></summary>
 <br>
 
-| Command        | Description                            |
-| -------------- | -------------------------------------- |
-| `/botinfo`     | Display information about the bot      |
-| `/help`        | Show help menu with all commands       |
-| `/ping`        | Check the bot's response time          |
-| `/roleinfo`    | View detailed information about a role |
-| `/serverinfo`  | Display information about the server   |
-| `/userinfo`    | Show information about a user          |
-| `/invite`      | Shows bot invite link                  |
-| `/support`     | Get invite link to the support server  |
+| Command       | Description                            |
+| ------------- | -------------------------------------- |
+| `/botinfo`    | Display information about the bot      |
+| `/help`       | Show help menu with all commands       |
+| `/ping`       | Check the bot's response time          |
+| `/roleinfo`   | View detailed information about a role |
+| `/serverinfo` | Display information about the server   |
+| `/userinfo`   | Show information about a user          |
+| `/invite`     | Shows bot invite link                  |
+| `/support`    | Get invite link to the support server  |
 
 </details>
 

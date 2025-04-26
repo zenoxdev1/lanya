@@ -7,16 +7,16 @@ function updateStatus(client) {
     // Load status configuration from status.json in root directory
     const statusConfigPath = path.join(process.cwd(), 'status.json');
     const statusConfig = JSON.parse(fs.readFileSync(statusConfigPath, 'utf8'));
-    
+
     const status = statusConfig.status;
     const interval = statusConfig.interval;
-    
+
     // Function to update the bot's status
     const updatePresence = () => {
       // Get the correct ActivityType value directly from the enum
       // ActivityType.Streaming instead of ActivityType['STREAMING']
       let activityType;
-      switch(status.type.toUpperCase()) {
+      switch (status.type.toUpperCase()) {
         case 'PLAYING':
           activityType = ActivityType.Playing;
           break;
@@ -35,7 +35,7 @@ function updateStatus(client) {
         default:
           activityType = ActivityType.Playing;
       }
-      
+
       // Replace variables in status text
       let state = status.state
         .replace('{serverCount}', client.guilds.cache.size)
@@ -64,10 +64,9 @@ function updateStatus(client) {
 
     // Set initial status
     updatePresence();
-    
+
     // Update status regularly to refresh the counts
     setInterval(updatePresence, interval);
-    
   } catch (error) {
     console.error(`Error with status configuration: ${error.message}`);
   }

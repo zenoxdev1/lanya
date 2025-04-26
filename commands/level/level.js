@@ -36,7 +36,8 @@ module.exports = {
     }
 
     const targetUser = interaction.options.getUser('user') || interaction.user;
-    const statusTarget = interaction.options.getMember('user') || interaction.member;
+    const statusTarget =
+      interaction.options.getMember('user') || interaction.member;
 
     const memberData = await MemberData.findOne({
       guildId: interaction.guild.id,
@@ -69,7 +70,7 @@ module.exports = {
     ctx.strokeRect(7.5, 7.5, canvas.width - 15, canvas.height - 15);
 
     const avatarUrl = targetUser.displayAvatarURL?.({
-      extension: 'webp', 
+      extension: 'webp',
       size: 256,
     });
 
@@ -96,7 +97,9 @@ module.exports = {
 
       console.log(`Avatar buffer length: ${buffer.byteLength}`);
 
-      const pngBuffer = await sharp(Buffer.from(buffer)).toFormat('png').toBuffer(); // 🔹 Fix: Convert `ArrayBuffer` to `Buffer`
+      const pngBuffer = await sharp(Buffer.from(buffer))
+        .toFormat('png')
+        .toBuffer(); // 🔹 Fix: Convert `ArrayBuffer` to `Buffer`
       if (!pngBuffer || pngBuffer.length === 0) {
         throw new Error(`Failed to convert avatar to PNG.`);
       }
@@ -127,7 +130,9 @@ module.exports = {
       ctx.drawImage(avatar, avatarX, avatarY, avatarSize, avatarSize);
       ctx.restore();
 
-      const statusColor = this.getStatusColor(interaction.guild.members.cache.get(targetUser.id)?.presence?.status); // 🔹 Fix: Ensure correct status fetching
+      const statusColor = this.getStatusColor(
+        interaction.guild.members.cache.get(targetUser.id)?.presence?.status
+      ); // 🔹 Fix: Ensure correct status fetching
       ctx.fillStyle = statusColor;
       ctx.beginPath();
       ctx.arc(
@@ -212,7 +217,8 @@ module.exports = {
       progressBarY + 47
     );
 
-    const attachment = new AttachmentBuilder(canvas.toBuffer('image/png'), { // 🔹 Ensured correct buffer format
+    const attachment = new AttachmentBuilder(canvas.toBuffer('image/png'), {
+      // 🔹 Ensured correct buffer format
       name: 'level.png', // 🔹 Changed to PNG for better quality
     });
 
@@ -220,13 +226,13 @@ module.exports = {
       content: `${targetUser.username}'s Level Information:`,
       files: [attachment],
     });
-    },
-    calculateXpNeeded(level, guildData) {
+  },
+  calculateXpNeeded(level, guildData) {
     return level === 1
       ? guildData.startingXp
       : guildData.startingXp + (level - 1) * guildData.xpPerLevel;
-    },
-    roundRect(ctx, x, y, width, height, radius) {
+  },
+  roundRect(ctx, x, y, width, height, radius) {
     const r = x + width;
     const b = y + height;
     ctx.beginPath();
@@ -242,8 +248,8 @@ module.exports = {
     ctx.closePath();
     ctx.clip();
     return ctx;
-    },
-    getStatusColor(status) {
+  },
+  getStatusColor(status) {
     switch (status) {
       case 'online':
         return '#43B581';
@@ -255,8 +261,8 @@ module.exports = {
       default:
         return '#7E7B7A';
     }
-    },
-    async getLeaderboardRank(guildId, level, xp) {
+  },
+  async getLeaderboardRank(guildId, level, xp) {
     const leaderboard = await MemberData.find({ guildId: guildId })
       .sort({ level: -1, xp: -1 })
       .lean();
@@ -266,5 +272,5 @@ module.exports = {
           user.level === level && user.guildId === guildId && user.xp === xp
       ) + 1;
     return rank > 0 ? rank : 'NA';
-    },
-    };
+  },
+};

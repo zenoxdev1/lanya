@@ -1,4 +1,8 @@
-const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
+const {
+  SlashCommandBuilder,
+  EmbedBuilder,
+  PermissionFlagsBits,
+} = require('discord.js');
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -29,7 +33,8 @@ module.exports = {
 
     const user = interaction.options.getUser('user');
     const duration = interaction.options.getString('duration');
-    const reason = interaction.options.getString('reason') || 'No reason provided.';
+    const reason =
+      interaction.options.getString('reason') || 'No reason provided.';
     const member = interaction.guild.members.cache.get(user.id);
     const executor = interaction.member;
     const botMember = interaction.guild.members.me;
@@ -64,7 +69,8 @@ module.exports = {
 
     if (member.roles.highest.position >= executor.roles.highest.position) {
       return interaction.reply({
-        content: '❌ You cannot timeout this user as they have a higher or equal role.',
+        content:
+          '❌ You cannot timeout this user as they have a higher or equal role.',
         ephemeral: true,
       });
     }
@@ -111,7 +117,8 @@ module.exports = {
     } catch (error) {
       console.error(error);
       return interaction.reply({
-        content: '❌ Failed to timeout the user. Please ensure I have the correct permissions.',
+        content:
+          '❌ Failed to timeout the user. Please ensure I have the correct permissions.',
         ephemeral: true,
       });
     }

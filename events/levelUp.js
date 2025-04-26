@@ -10,7 +10,9 @@ module.exports = {
   async execute(message) {
     if (message.author.bot || !message.guild) return;
 
-    const guildData = await GuildSettings.findOne({ guildId: message.guild.id });
+    const guildData = await GuildSettings.findOne({
+      guildId: message.guild.id,
+    });
     if (!guildData || !guildData.levelingEnabled) return;
 
     const messageCooldown = 3000;
@@ -18,7 +20,8 @@ module.exports = {
     const currentTime = Date.now();
     const lastMessageTime = messageTimestamps.get(message.author.id);
 
-    if (lastMessageTime && currentTime - lastMessageTime < messageCooldown) return;
+    if (lastMessageTime && currentTime - lastMessageTime < messageCooldown)
+      return;
     messageTimestamps.set(message.author.id, currentTime);
 
     const xpToAdd = Math.floor(Math.random() * 10 + 5) * xpRate;
@@ -43,7 +46,10 @@ module.exports = {
 
     const calculateXpNeeded = (level) => {
       if (level === 1) return guildData.startingXp || 100;
-      return (guildData.startingXp || 100) + (level - 1) * (guildData.xpPerLevel || 50);
+      return (
+        (guildData.startingXp || 100) +
+        (level - 1) * (guildData.xpPerLevel || 50)
+      );
     };
 
     let previousLevel = memberData.level;
@@ -59,12 +65,23 @@ module.exports = {
       const cooldownTime = 5000;
       const userId = message.author.id;
 
-      if (!cooldowns.has(userId) || currentTime - cooldowns.get(userId) > cooldownTime) {
+      if (
+        !cooldowns.has(userId) ||
+        currentTime - cooldowns.get(userId) > cooldownTime
+      ) {
         cooldowns.set(userId, currentTime);
-        await module.exports.notifyLevelUp(message, memberData.level, guildData);
+        await module.exports.notifyLevelUp(
+          message,
+          memberData.level,
+          guildData
+        );
       }
 
-      await module.exports.assignRoles(message, previousLevel + 1, memberData.level);
+      await module.exports.assignRoles(
+        message,
+        previousLevel + 1,
+        memberData.level
+      );
     }
 
     await memberData.save();
@@ -75,16 +92,22 @@ module.exports = {
       let channel = message.channel;
 
       if (guildData.levelUpChannelId) {
-        const target = message.guild.channels.cache.get(guildData.levelUpChannelId);
+        const target = message.guild.channels.cache.get(
+          guildData.levelUpChannelId
+        );
         if (target && target.isTextBased()) channel = target;
       }
 
       if (!channel || !channel.send) {
-        console.warn(`No valid level-up channel found for guild ${message.guild.id}`);
+        console.warn(
+          `No valid level-up channel found for guild ${message.guild.id}`
+        );
         return;
       }
 
-      await channel.send(`${message.author} has leveled up to level **${level}**! 🎉`);
+      await channel.send(
+        `${message.author} has leveled up to level **${level}**! 🎉`
+      );
     } catch (err) {
       console.error('Level-up message failed:', err.message);
     }
@@ -118,7 +141,10 @@ module.exports = {
             try {
               await member.roles.add(role);
             } catch (err) {
-              console.error(`Error adding role ${role.name} to ${member.user.tag}:`, err.message);
+              console.error(
+                `Error adding role ${role.name} to ${member.user.tag}:`,
+                err.message
+              );
             }
           }
         });
