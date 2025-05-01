@@ -36,6 +36,9 @@ module.exports = {
           );
         }
       }, 180000);
+      if (player.collector) {
+        player.collector.stop();
+      }
     } else if (player.inactivityTimeout) {
       clearTimeout(player.inactivityTimeout);
       player.inactivityTimeout = null;
