@@ -38,14 +38,16 @@ module.exports = {
         },
         {
           name: '🎧 Requested by',
-          value: `${player.requester}`,
+          value: `${track.userData?.requester || 'Unknown'}`,
           inline: true,
         },
       ])
       .setTimestamp()
       .setFooter({
         text: `Volume: ${player.volume}% | Loop: ${player.repeatMode}`,
-        iconURL: player.requester.displayAvatarURL(),
+        iconURL:
+          track.userData?.requester?.displayAvatarURL() ||
+          client.user.displayAvatarURL(),
       });
 
     const [firstRow, secondRow] = createControlButtons();
@@ -69,9 +71,7 @@ module.exports = {
 
     player.queue.current.userData.nowPlayingMessage = controlMessage;
 
-    const collector = controlMessage.createMessageComponentCollector({
-      time: track.info.duration,
-    });
+    const collector = controlMessage.createMessageComponentCollector({});
 
     player.collector = collector;
 
