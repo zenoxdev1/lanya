@@ -51,6 +51,7 @@ module.exports = {
       utility: { name: 'Utility', emoji: '🪛' },
       minecraft: { name: 'Minecraft', emoji: '🟩' },
       info: { name: 'Information', emoji: 'ℹ️' },
+      tickets: { name: 'Tickets', emoji: '🎫' },
     };
     const helpEmbed = new EmbedBuilder()
       .setColor(0x5865f2)
