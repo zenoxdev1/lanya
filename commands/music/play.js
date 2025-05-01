@@ -31,7 +31,15 @@ module.exports = {
   async autocomplete(interaction) {
     try {
       const query = interaction.options.getFocused();
-
+      const member = interaction.member;
+      if (!member.voice.channel) {
+        return await interaction.respond([
+          {
+            name: '⚠️ Join a voice channel first!',
+            value: 'join_vc',
+          },
+        ]);
+      }
       if (!query.trim()) {
         return await interaction.respond([
           {
@@ -40,9 +48,6 @@ module.exports = {
           },
         ]);
       }
-
-      const member = interaction.member;
-      const notInVC = !member.voice.channel;
 
       const source = 'spsearch';
 
@@ -68,7 +73,7 @@ module.exports = {
           options = [
             {
               name: `📑 Playlist: ${results.playlist?.title || 'Unknown'} (${results.tracks.length} tracks)`,
-              value: `playlist_${results.tracks[0].info.uri}`,
+              value: `${query}`,
             },
           ];
         } else {
@@ -76,13 +81,6 @@ module.exports = {
             name: `${track.info.title} - ${track.info.author}`,
             value: track.info.uri,
           }));
-        }
-
-        if (notInVC) {
-          options.unshift({
-            name: '⚠️ Join a voice channel first!',
-            value: 'join_vc',
-          });
         }
 
         return await interaction.respond(options);
@@ -140,15 +138,13 @@ module.exports = {
 
     await interaction.deferReply();
 
-    const isURL = query.startsWith('http://') || query.startsWith('https://');
-    let search;
-    if (isURL) {
-      search = await player.search({ query, source });
+    if (query.startsWith('playlist_')) {
+      const actualQuery = query.replace('playlist_', '');
+      search = await player.search({ query: actualQuery, source });
     } else {
+      const isURL = query.startsWith('http://') || query.startsWith('https://');
       search = await player.search({ query, source });
     }
-
-    player.requester = interaction.member;
 
     if (!search?.tracks?.length) {
       return interaction.editReply({
@@ -159,6 +155,7 @@ module.exports = {
 
     if (search.loadType === 'playlist') {
       for (const track of search.tracks) {
+        track.userData = { requester: interaction.member };
         await player.queue.add(track);
       }
 
@@ -200,6 +197,7 @@ module.exports = {
       return interaction.editReply({ embeds: [playlistEmbed] });
     } else {
       const track = search.tracks[0];
+      track.userData = { requester: interaction.member };
       await player.queue.add(track);
 
       const trackEmbed = new EmbedBuilder()
