@@ -11,6 +11,7 @@
         "axios": "^1.7.7",
         "canvas": "^2.11.2",
         "chalk": "^4.1.2",
+        "dayjs": "^1.11.13",
         "discord.js": "^14.16.3",
         "dotenv": "^16.4.7",
         "ejs": "^3.1.10",
@@ -535,6 +536,8 @@
     "csvtojson": ["csvtojson@2.0.10", "", { "dependencies": { "bluebird": "^3.5.1", "lodash": "^4.17.3", "strip-bom": "^2.0.0" }, "bin": { "csvtojson": "./bin/csvtojson" } }, "sha512-lUWFxGKyhraKCW8Qghz6Z0f2l/PqB1W3AO0HKJzGIQ5JRSlR651ekJDiGJbBT4sRNNv5ddnSGVEnsxP9XRCVpQ=="],
 
     "date-fns": ["date-fns@2.30.0", "", { "dependencies": { "@babel/runtime": "^7.21.0" } }, "sha512-fnULvOpxnC5/Vg3NCiWelDsLiUc9bRwAPs/+LfTLNvetFCtCTN+yQz15C/fs4AwX1R9K5GLtLfn8QW+dWisaAw=="],
+
+    "dayjs": ["dayjs@1.11.13", "", {}, "sha512-oaMBel6gjolK862uaPQOVTA7q3TZhuSvuMQAAglQDOWYO9A91IrAOUJEyKVlqJlHE0vq5p5UXxzdPfMH/x6xNg=="],
 
     "debug": ["debug@2.6.9", "", { "dependencies": { "ms": "2.0.0" } }, "sha512-bC7ElrdJaJnPbAP+1EotYvqZsb3ecl5wi6Bfi6BJTUcNowp6cvspg0jXznRTKDjm/E7AdgFBVeAPVMNcKGsHMA=="],
 
