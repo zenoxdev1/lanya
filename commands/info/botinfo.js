@@ -97,7 +97,7 @@ module.exports = {
 
     const sourceCodeButton = new ButtonBuilder()
       .setLabel('Source Code')
-      .setURL('https://github.com/birajrai/Lanya.git')
+      .setURL('https://github.com/birajrai/lanya')
       .setStyle(ButtonStyle.Link);
 
     const row = new ActionRowBuilder().addComponents(sourceCodeButton);
