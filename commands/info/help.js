@@ -4,355 +4,259 @@ const {
   ActionRowBuilder,
   StringSelectMenuBuilder,
   ButtonBuilder,
-  ButtonStyle,
-  ComponentType,
 } = require('discord.js');
-
-// Emoji map for categories - makes your command look more visually appealing
-const CATEGORY_EMOJIS = {
-  Moderation: '🛡️',
-  Utility: '🔧',
-  Fun: '🎮',
-  Music: '🎵',
-  Level: '🏆',
-  Admin: '🔒',
-  Economy: '💰',
-  Info: 'ℹ️',
-  Minecraft: '⛏️',
-  Uncategorized: '📁',
-};
-
-// Command emojis
-const COMMAND_EMOJIS = {
-  help: '❓',
-  // Add more command-specific emojis as needed
-};
+const Fuse = require('fuse.js');
 
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('help')
     .setDescription(
-      'Displays a list of commands or details about a specific command.'
+      'Displays a list of commands or detailed info about a specific command.'
     )
     .addStringOption((option) =>
       option
         .setName('command')
-        .setDescription('Get details about a specific command')
+        .setDescription('Get detailed info about a specific command')
         .setAutocomplete(true)
+    )
+    .addStringOption((option) =>
+      option
+        .setName('search')
+        .setDescription('Search for commands using keywords')
     ),
-  category: 'Utility', // Set the category for this command
 
   async autocomplete(interaction) {
-    const focusedValue = interaction.options.getFocused().trim().toLowerCase();
+    const focusedValue = interaction.options.getFocused().trim();
     const commandNames = [...interaction.client.commands.keys()];
 
     const filtered = commandNames
-      .filter((name) => name.toLowerCase().includes(focusedValue)) // Changed from startsWith to includes for more flexible matching
-      .slice(0, 25) // Increased from 10 to 25 for more options
-      .map((name) => {
-        const command = interaction.client.commands.get(name);
-        const emoji = COMMAND_EMOJIS[name] || '📌';
-        return {
-          name: `${emoji} ${name} - ${command.data.description.slice(0, 50)}`,
-          value: name,
-        };
-      });
+      .filter((name) => name.startsWith(focusedValue))
+      .slice(0, 10)
+      .map((name) => ({ name, value: name }));
 
-    await interaction.respond(
-      filtered.length
-        ? filtered
-        : [{ name: '❌ No matches found', value: 'none' }]
-    );
+    await interaction.respond(filtered);
   },
 
   async execute(interaction) {
     const { client } = interaction;
+    const commandName = interaction.options.getString('command');
+    const searchQuery = interaction.options.getString('search');
+    // Custom category display names and emojis
+    const categoryMap = {
+      admin: { name: 'Administration', emoji: '⚙️' },
+      fun: { name: 'Fun & Games', emoji: '🎉' },
+      level: { name: 'Leaderboard', emoji: '🎮' },
+      music: { name: 'Music', emoji: '🎵' },
+      moderation: { name: 'Moderation', emoji: '🔨' },
+      utility: { name: 'Utility', emoji: '🪛' },
+      minecraft: { name: 'Minecraft', emoji: '🟩' },
+      info: { name: 'Information', emoji: 'ℹ️' },
+    };
+    const helpEmbed = new EmbedBuilder()
+      .setColor(0x5865f2)
+      .setFooter({
+        text: `Requested by ${interaction.user.tag}`,
+        iconURL: interaction.user.displayAvatarURL(),
+      })
+      .setTimestamp();
 
-    try {
-      await interaction.deferReply();
-
-      const commandName = interaction.options.getString('command');
-      const helpEmbed = new EmbedBuilder()
+    // Fuzzy search logic
+    if (searchQuery) {
+      const fuse = new Fuse([...client.commands.values()], {
+        keys: ['data.name', 'data.description'],
+        threshold: 0.4,
+      });
+      const results = fuse.search(searchQuery);
+      if (!results.length) {
+        return interaction.reply({
+          content: `❌ No commands found matching "${searchQuery}".`,
+          ephemeral: true,
+        });
+      }
+      const embed = new EmbedBuilder()
         .setColor(0x5865f2)
+        .setTitle(`🔎 Search Results for "${searchQuery}"`)
+        .setDescription(
+          results
+            .slice(0, 10)
+            .map(
+              (r, i) =>
+                `**${i + 1}.** \`/${r.item.data.name}\` - ${r.item.data.description || 'No description.'}`
+            )
+            .join('\n')
+        )
         .setFooter({
           text: `Requested by ${interaction.user.tag}`,
           iconURL: interaction.user.displayAvatarURL(),
         })
         .setTimestamp();
-
-      if (commandName) {
-        return this.sendCommandHelp(
-          interaction,
-          client,
-          commandName,
-          helpEmbed
-        );
-      } else {
-        return this.sendHelpMenu(interaction, client, helpEmbed);
-      }
-    } catch (error) {
-      console.error('Error in help command:', error);
-      return interaction
-        .editReply({
-          content:
-            '❌ An error occurred while processing your request. Please try again later.',
-        })
-        .catch(console.error);
+      return interaction.reply({ embeds: [embed] });
     }
-  },
 
-  async sendCommandHelp(interaction, client, commandName, embed) {
-    try {
+    if (commandName) {
       const command = client.commands.get(commandName);
       if (!command) {
-        return interaction.editReply({
-          content:
-            '❌ The command you entered was not found. Try using `/help` to see the available commands.',
+        return interaction.reply({
+          content: '❌ Command not found!',
+          ephemeral: true,
         });
       }
-
-      // Get options if any
-      const options =
-        command.data.options
-          ?.map((opt) => {
-            const required = opt.required ? '(required)' : '(optional)';
-            return `\`${opt.name}\` ${required}: ${opt.description}`;
-          })
-          .join('\n') || 'No options available.';
-
-      const categoryEmoji = command.category
-        ? CATEGORY_EMOJIS[
-            command.category.charAt(0).toUpperCase() +
-              command.category.slice(1).toLowerCase()
-          ] || '📁'
-        : '📁';
-
-      const commandEmoji = COMMAND_EMOJIS[command.data.name] || '📌';
-
-      embed
-        .setTitle(`${commandEmoji} **Command Details: /${command.data.name}**`)
+      helpEmbed
+        .setTitle(`🔍 Command: **/${command.data.name}**`)
         .setDescription(command.data.description || 'No description available.')
         .addFields(
           {
             name: '🛠️ Usage',
-            value: `\`/${command.data.name}${command.data.options?.length ? ' [options]' : ''}\``,
+            value:
+              `\`/${command.data.name}\`` +
+              (command.data.options?.length
+                ? ' ' +
+                  command.data.options.map((opt) => `<${opt.name}>`).join(' ')
+                : ''),
           },
           {
-            name: '📂 Category',
-            value: `${categoryEmoji} ${command.category || 'Uncategorized'}`,
+            name: 'ℹ️ Details',
+            value: `${command.data.description}`,
           },
-          {
-            name: '⌨️ Options',
-            value: options,
-          }
+          ...(command.data.options?.length
+            ? [
+                {
+                  name: 'Options',
+                  value: command.data.options
+                    .map(
+                      (opt) =>
+                        `• \`${opt.name}\`: ${opt.description || 'No description.'}`
+                    )
+                    .join('\n'),
+                },
+              ]
+            : [])
         );
-
-      // Add a "back to menu" button
-      const row = new ActionRowBuilder().addComponents(
-        new ButtonBuilder()
-          .setCustomId('help-back')
-          .setLabel('Back to Help Menu')
-          .setStyle(ButtonStyle.Secondary)
-          .setEmoji('↩️')
-      );
-
-      const reply = await interaction.editReply({
-        embeds: [embed],
-        components: [row],
+      return interaction.reply({ embeds: [helpEmbed] });
+    } else {
+      const categories = {};
+      client.commands.forEach((cmd) => {
+        const rawCategory = cmd.category || 'Uncategorized';
+        const display = categoryMap[rawCategory] || {
+          name: rawCategory,
+          emoji: '📁',
+        };
+        const key = `${display.emoji} ${display.name}`;
+        if (!categories[key]) categories[key] = [];
+        categories[key].push(cmd.data.name);
       });
-
-      // Collector for the back button
-      const filter = (i) =>
-        i.customId === 'help-back' && i.user.id === interaction.user.id;
-      const collector = reply.createMessageComponentCollector({
-        filter,
-        time: 60000,
-        componentType: ComponentType.Button,
-      });
-
-      collector.on('collect', async (i) => {
-        await i.deferUpdate();
-        await this.sendHelpMenu(interaction, client, embed);
-      });
-
-      return reply;
-    } catch (error) {
-      console.error('Error in sendCommandHelp:', error);
-      return interaction
-        .editReply({
-          content:
-            '❌ An error occurred while displaying command help. Please try again later.',
-        })
-        .catch(console.error);
-    }
-  },
-
-  async sendHelpMenu(interaction, client, embed) {
-    try {
-      const categories = this.getCommandCategories(client);
-
-      if (Object.keys(categories).length === 0) {
-        return interaction.editReply({
-          content: '⚠️ No commands available.',
-        });
-      }
 
       const selectMenu = new StringSelectMenuBuilder()
         .setCustomId('help-menu')
-        .setPlaceholder('Select a category')
+        .setPlaceholder('Choose a category')
         .addOptions(
-          Object.keys(categories).map((category) => {
-            const emoji = CATEGORY_EMOJIS[category] || '📁';
-            return {
-              label: category,
-              value: category,
-              description: `${categories[category].length} commands in ${category}`,
-              emoji: emoji,
-            };
-          })
+          Object.keys(categories).map((category) => ({
+            label: category,
+            value: category,
+            description: `Commands under ${category}`,
+          }))
         );
 
       const row = new ActionRowBuilder().addComponents(selectMenu);
 
-      embed
+      helpEmbed
         .setThumbnail(client.user.displayAvatarURL({ dynamic: true }))
-        .setTitle('✨ Bot Help Menu')
+        .setTitle('✨ Help Menu')
         .setDescription(
-          'Use the dropdown menu below to explore commands by category. For specific command details, use `/help command:commandname`.'
+          'Browse available commands by selecting a category from the menu below. Use `/help <command>` for detailed info about a specific command.'
         )
-        .setFields(
-          Object.entries(categories).map(([category, commands]) => {
-            const emoji = CATEGORY_EMOJIS[category] || '📁';
-            return {
-              name: `${emoji} ${category}`,
-              value: `${commands.length} command${commands.length === 1 ? '' : 's'} available`,
-              inline: true,
-            };
-          })
+        .addFields(
+          Object.entries(categories).map(([category, commands]) => ({
+            name: `${category}`,
+            value: `${commands.length} commands available`,
+            inline: true,
+          }))
         );
 
-      const reply = await interaction.editReply({
-        embeds: [embed],
-        components: [row],
+      await interaction.reply({ embeds: [helpEmbed], components: [row] });
+
+      const filter = (i) =>
+        (i.customId === 'help-menu' ||
+          i.customId === 'prev_page' ||
+          i.customId === 'next_page') &&
+        i.user.id === interaction.user.id;
+      const collector = interaction.channel.createMessageComponentCollector({
+        filter,
+        time: 60000,
       });
 
-      this.createCollector(interaction, categories, row, reply);
-      return reply;
-    } catch (error) {
-      console.error('Error in sendHelpMenu:', error);
-      return interaction
-        .editReply({
-          content:
-            '❌ An error occurred while displaying the help menu. Please try again later.',
-        })
-        .catch(console.error);
-    }
-  },
+      let page = 0;
+      let selectedCategory = Object.keys(categories)[0];
+      const PAGE_SIZE = 6;
 
-  getCommandCategories(client) {
-    const categories = {};
-    client.commands.forEach((cmd) => {
-      const category = cmd.category
-        ? cmd.category.charAt(0).toUpperCase() +
-          cmd.category.slice(1).toLowerCase()
-        : 'Uncategorized';
-      if (!categories[category]) categories[category] = [];
-      categories[category].push(cmd.data.name);
-    });
-    return categories;
-  },
-
-  createCollector(interaction, categories, row, reply) {
-    try {
-      // Create a collector for the message reply
-      const collector = reply.createMessageComponentCollector({
-        componentType: ComponentType.StringSelect, // Use ComponentType instead of the magic number
-        time: 120000, // Increased timeout to 2 minutes
-        filter: (i) => i.user.id === interaction.user.id,
-      });
+      async function updateCategoryEmbed(i, category, pageNum) {
+        const commandsInCategory = categories[category];
+        const totalPages = Math.ceil(commandsInCategory.length / PAGE_SIZE);
+        const pagedCommands = commandsInCategory.slice(
+          pageNum * PAGE_SIZE,
+          (pageNum + 1) * PAGE_SIZE
+        );
+        const categoryEmbed = new EmbedBuilder()
+          .setColor(0x5865f2)
+          .setTitle(
+            `🔶 Commands: **${category}** (Page ${pageNum + 1}/${totalPages})`
+          )
+          .setDescription(
+            pagedCommands
+              .map((cmdName) => {
+                const cmd = client.commands.get(cmdName);
+                const cmdDescription =
+                  cmd?.data?.description || 'No description available.';
+                return `> \`/${cmdName}\` - ${cmdDescription}`;
+              })
+              .join('\n') || 'No commands available.'
+          )
+          .setFooter({
+            text: `Requested by ${interaction.user.tag}`,
+            iconURL: interaction.user.displayAvatarURL(),
+          })
+          .setTimestamp();
+        const prevBtn = new ButtonBuilder()
+          .setCustomId('prev_page')
+          .setLabel('Previous')
+          .setStyle('Secondary')
+          .setDisabled(pageNum === 0);
+        const nextBtn = new ButtonBuilder()
+          .setCustomId('next_page')
+          .setLabel('Next')
+          .setStyle('Secondary')
+          .setDisabled(pageNum + 1 >= totalPages);
+        const paginationRow = new ActionRowBuilder().addComponents(
+          prevBtn,
+          nextBtn
+        );
+        await i.update({
+          embeds: [categoryEmbed],
+          components: [row, paginationRow],
+        });
+      }
 
       collector.on('collect', async (i) => {
-        try {
-          await i.deferUpdate();
-
-          const selectedCategory = i.values[0];
+        if (i.customId === 'help-menu') {
+          selectedCategory = i.values[0];
+          page = 0;
+          await updateCategoryEmbed(i, selectedCategory, page);
+        } else if (i.customId === 'prev_page') {
+          if (page > 0) page--;
+          await updateCategoryEmbed(i, selectedCategory, page);
+        } else if (i.customId === 'next_page') {
           const commandsInCategory = categories[selectedCategory];
-          const categoryEmoji = CATEGORY_EMOJIS[selectedCategory] || '📁';
-
-          const commandsList =
-            commandsInCategory
-              .map((cmdName) => {
-                const cmd = interaction.client.commands.get(cmdName);
-                const cmdEmoji = COMMAND_EMOJIS[cmdName] || '📌';
-                return `> ${cmdEmoji} \`/${cmdName}\` - ${cmd?.data?.description || 'No description available.'}`;
-              })
-              .join('\n') || 'No commands available.';
-
-          const categoryEmbed = new EmbedBuilder()
-            .setColor(0x5865f2)
-            .setTitle(`${categoryEmoji} **${selectedCategory} Commands**`)
-            .setDescription(
-              `Select a command from the list below or use \`/help command:commandname\` for details.\n\n${commandsList}`
-            )
-            .setFooter({
-              text: `Requested by ${interaction.user.tag} • Page 1/${Math.ceil(commandsInCategory.length / 10)}`,
-              iconURL: interaction.user.displayAvatarURL(),
-            })
-            .setTimestamp();
-
-          await i.editReply({ embeds: [categoryEmbed], components: [row] });
-        } catch (error) {
-          console.error('Error handling select menu interaction:', error);
-          await i
-            .editReply({
-              content:
-                '❌ An error occurred while processing your selection. Please try again.',
-            })
-            .catch(console.error);
+          const totalPages = Math.ceil(commandsInCategory.length / PAGE_SIZE);
+          if (page + 1 < totalPages) page++;
+          await updateCategoryEmbed(i, selectedCategory, page);
         }
       });
 
       collector.on('end', async () => {
-        try {
-          // Make sure the message exists and is still editable
-          const fetchedMessage = await interaction
-            .fetchReply()
-            .catch(() => null);
-          if (fetchedMessage) {
-            const expiredEmbed = EmbedBuilder.from(fetchedMessage.embeds[0]);
-
-            if (expiredEmbed) {
-              expiredEmbed.setFooter({
-                text: `Help menu expired • Run /help again for more information`,
-                iconURL: interaction.user.displayAvatarURL(),
-              });
-
-              await interaction
-                .editReply({
-                  embeds: [expiredEmbed],
-                  components: [],
-                })
-                .catch((err) =>
-                  console.error('Failed to update expired menu:', err)
-                );
-            } else {
-              await interaction
-                .editReply({
-                  components: [],
-                  content:
-                    '⌛ Help menu has expired. Run `/help` again if you need more information.',
-                })
-                .catch((err) =>
-                  console.error('Failed to update expired menu:', err)
-                );
-            }
-          }
-        } catch (error) {
-          console.error('Error handling collector end:', error);
-        }
+        const disabledMenu = selectMenu.setDisabled(true);
+        const disabledRow = new ActionRowBuilder().addComponents(disabledMenu);
+        await interaction.editReply({ components: [disabledRow] });
       });
-    } catch (error) {
-      console.error('Error creating collector:', error);
     }
   },
 };
