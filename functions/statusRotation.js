@@ -58,7 +58,7 @@ function updateStatus(client) {
       // Set the presence
       client.user.setPresence({
         activities: [activity],
-        status: 'offline',
+        status: 'online',
       });
     };
 
